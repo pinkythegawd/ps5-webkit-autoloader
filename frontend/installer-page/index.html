@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en" manifest="/cache.appcache">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebKit Autoloader Installer v[[VERSION_PLACEHOLDER]] by MikePinku (built [[BUILD_TIME_PLACEHOLDER]])</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: #0b0a14;
+      background: -webkit-linear-gradient(160deg, #14101f 0%, #0b0a14 55%, #08070e 100%);
+      color: #ece7f5;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      min-height: 100%;
+      text-align: center;
+    }
+
+    #pageHeader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      z-index: 30;
+    }
+
+    #brand {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    #brandMark {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+
+    #brandName {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #fff;
+      line-height: 1.2;
+      text-align: left;
+    }
+
+    #brandName small {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #ff6fb5;
+    }
+
+    #chainInfo {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.34rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 79, 163, 0.45);
+      background: rgba(255, 79, 163, 0.10);
+      color: #ff8cc4;
+      white-space: nowrap;
+    }
+
+    #chainInfo[hidden] {
+      display: none !important;
+    }
+
+    #footer {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      width: 92%;
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      color: #5f5878;
+      line-height: 1.5;
+      text-align: center;
+      z-index: 20;
+    }
+
+    #footer a { color: #8d84a8; text-decoration: none; }
+    #footer a:hover { color: #ff8cc4; }
+
+    main {
+      max-width: 42rem;
+      padding: 2rem;
+      width: 100%;
+    }
+
+    .logo {
+      display: inline-block;
+      width: 7rem;
+      height: 7rem;
+      margin-bottom: 1.5rem;
+      filter: drop-shadow(0 10px 30px rgba(255, 79, 163, 0.35));
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.9rem;
+      background: -webkit-linear-gradient(90deg, #ffffff, #d9c9ee);
+      background: linear-gradient(90deg, #ffffff, #d9c9ee);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: #fff;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: 1.3rem;
+      line-height: 1.5;
+      color: #a79ec0;
+    }
+
+    #status {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ff6fb5;
+      margin-bottom: 0.5rem;
+    }
+
+    #detail { white-space: pre-line; }
+
+    #status.success { color: #4ade80; }
+    #status.error { color: #ff6b6b; }
+
+    #progress {
+      position: relative;
+      width: 100%;
+      max-width: 30rem;
+      height: 1.3rem;
+      margin: 1.75rem auto 0;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 79, 163, 0.25);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: #ff4fa3;
+      background: -webkit-linear-gradient(90deg, #c26bff 0%, #ff4fa3 100%);
+      background: linear-gradient(90deg, #c26bff 0%, #ff4fa3 100%);
+      -webkit-box-shadow: 0 0 16px rgba(255, 79, 163, 0.55);
+      box-shadow: 0 0 16px rgba(255, 79, 163, 0.55);
+      -webkit-transform: scaleX(0);
+      transform: scaleX(0);
+      -webkit-transform-origin: left center;
+      transform-origin: left center;
+      -webkit-transition: -webkit-transform 0.3s ease-out;
+      transition: transform 0.3s ease-out;
+    }
+
+    #percent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #progress.success #progressBar {
+      background: #2fbf71;
+      background: -webkit-linear-gradient(90deg, #15803d 0%, #2fbf71 100%);
+      -webkit-box-shadow: 0 0 14px rgba(47, 191, 113, 0.5);
+      box-shadow: 0 0 14px rgba(47, 191, 113, 0.5);
+    }
+    #progress.error #progressBar {
+      background: #d92b2b;
+      background: -webkit-linear-gradient(90deg, #8f1d1d 0%, #d92b2b 100%);
+      -webkit-box-shadow: 0 0 14px rgba(217, 43, 43, 0.5);
+      box-shadow: 0 0 14px rgba(217, 43, 43, 0.5);
+    }
+    #progress.indeterminate #progressBar {
+      -webkit-animation: cachePulse 1.2s ease-in-out infinite alternate;
+      animation: cachePulse 1.2s ease-in-out infinite alternate;
+    }
+    @-webkit-keyframes cachePulse {
+      from { opacity: 0.35; }
+      to { opacity: 1; }
+    }
+    @keyframes cachePulse {
+      from { opacity: 0.35; }
+      to { opacity: 1; }
+    }
+
+    #logContainer {
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 40rem;
+      height: 12rem;
+      background: rgba(5, 4, 10, 0.85);
+      border: 1px solid rgba(255, 79, 163, 0.22);
+      border-radius: 10px;
+      overflow-y: auto;
+      text-align: left;
+      font-family: "SFMono-Regular", Menlo, Monaco, "Cascadia Mono", monospace;
+      font-size: 0.8rem;
+      padding: 0.6rem;
+      color: #a79ec0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    #logContainer.error {
+      color: #ff6b6b;
+    }
+
+    #cacheCorruptOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 4, 10, 0.88);
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #cacheCorruptOverlay .card {
+      background: #16121f;
+      border: 1px solid rgba(255, 79, 163, 0.3);
+      border-radius: 14px;
+      -webkit-box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+      max-width: 34rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    #cacheCorruptOverlay h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffd166;
+      margin-bottom: 1rem;
+    }
+
+    #cacheCorruptOverlay p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #c9c2da;
+      margin-bottom: 1.5rem;
+    }
+
+    #cacheCorruptOverlay .actions {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    #cacheCorruptOverlay .actions[hidden] {
+      display: none !important;
+    }
+
+    #cacheCorruptOverlay .btn {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #cacheCorruptOverlay .btn.primary {
+      background: #ff4fa3;
+      background: -webkit-linear-gradient(90deg, #c26bff 0%, #ff4fa3 100%);
+      background: linear-gradient(90deg, #c26bff 0%, #ff4fa3 100%);
+      color: #fff;
+    }
+
+    #cacheCorruptOverlay .btn.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ece7f5;
+    }
+
+    #choice {
+      margin-top: 1.5rem;
+      width: 100%;
+      max-width: 38rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #choice[hidden] {
+      display: none !important;
+    }
+
+    .choice-grid {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .choice-card {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(255, 255, 255, 0.10);
+      border-radius: 14px;
+      padding: 1.5rem 1.25rem;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      cursor: pointer;
+      color: inherit;
+      font-family: inherit;
+      -webkit-transition: border-color 0.2s, -webkit-transform 0.2s, background-color 0.2s;
+      transition: border-color 0.2s, transform 0.2s, background-color 0.2s;
+      outline: none;
+    }
+
+    .choice-card.selected {
+      border-color: rgba(255, 79, 163, 0.5);
+      background-color: rgba(255, 79, 163, 0.07);
+    }
+
+    .choice-card:hover,
+    .choice-card:focus {
+      border-color: #ff4fa3;
+      background-color: rgba(255, 79, 163, 0.10);
+      -webkit-transform: translateY(-2px);
+      transform: translateY(-2px);
+      -webkit-box-shadow: 0 0 0 3px rgba(255, 79, 163, 0.35);
+      box-shadow: 0 0 0 3px rgba(255, 79, 163, 0.35);
+    }
+
+    .choice-card:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .choice-card .choice-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ff6fb5;
+      margin-bottom: 0.25rem;
+    }
+
+    .choice-card .choice-fw {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ff8cc4;
+      background: rgba(255, 79, 163, 0.12);
+      border: 1px solid rgba(255, 79, 163, 0.35);
+      border-radius: 6px;
+      padding: 0.15rem 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .choice-card .choice-desc {
+      font-size: 0.95rem;
+      color: #c9c2da;
+      line-height: 1.5;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 560px) {
+      body { height: auto; display: block; }
+      main { padding: 6.5rem 1rem 2rem; }
+      .choice-grid { -webkit-flex-direction: column; flex-direction: column; }
+      h1 { font-size: 1.9rem; }
+      #footer {
+        position: static;
+        width: 100%;
+        padding: 0 0.5rem 12px;
+        -webkit-transform: none;
+        transform: none;
+      }
+      #cacheCorruptOverlay .card { margin: 1rem; }
+      #pageHeader { padding: 0.8rem 1rem; }
+    }
+  </style>
+
+</head>
+
+<body>
+  <header id="pageHeader">
+    <div id="brand">
+      <svg id="brandMark" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="pkg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ff4fa3" />
+            <stop offset="1" stop-color="#c26bff" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#pkg)" d="M32 4a28 28 0 1 0 0 56V47a15 15 0 1 1 0-30c8 0 15 6 15 15h13C60 16.3 47.7 4 32 4z" />
+        <circle cx="32" cy="32" r="7" fill="url(#pkg)" />
+      </svg>
+      <div id="brandName">WebKit Autoloader<small>Installer &middot; by MikePinku</small></div>
+    </div>
+    <div id="chainInfo" hidden></div>
+  </header>
+
+  <main>
+    <img class="logo" src="/logo.svg" alt="WebKit Autoloader" />
+    <h1>WebKit Autoloader Installer</h1>
+    <p id="status">Caching content...</p>
+    <p id="detail">Please wait a moment. Do not close this page yet!</p>
+
+    <div id="choice" hidden>
+      <div class="choice-grid">
+        <button type="button" class="choice-card" id="poops">
+          <div class="choice-title">Poops</div>
+          <div class="choice-fw">FW 7.00 &ndash; 12.00</div>
+          <div class="choice-desc">Works completely offline. Does not require any network connection or active network interface.</div>
+        </button>
+        <button type="button" class="choice-card" id="relapse">
+          <div class="choice-title">Relapse</div>
+          <div class="choice-fw">FW 7.00 &ndash; 13.60</div>
+          <div class="choice-desc">Requires an active network interface (Wi-Fi or Ethernet). Internet access is not required.</div>
+        </button>
+      </div>
+    </div>
+
+    <div id="progress" role="progressbar" aria-label="Cache download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div id="progressBar"></div>
+      <div id="percent">0%</div>
+    </div>
+    <div id="logContainer" hidden></div>
+
+  </main>
+
+  <footer id="footer">WebKit Autoloader Installer v[[VERSION_PLACEHOLDER]] by MikePinku (built [[BUILD_TIME_PLACEHOLDER]])<br />This project is free and open source: github.com/pinkythegawd/ps5-webkit-autoloader</footer>
+
+  <div id="cacheCorruptOverlay" role="dialog" aria-modal="true" aria-labelledby="repairTitle" aria-describedby="repairMessage" hidden>
+    <div class="card">
+      <h2 id="repairTitle">WebKit cache appears corrupted</h2>
+      <p id="repairMessage">Clearing WebKit browser data may fix the issue. This removes AppCache, cookies, and local storage for the current user.</p>
+      <div class="actions">
+        <button type="button" id="repair" class="btn primary" hidden>Clear WebKit Data &amp; Retry</button>
+        <button type="button" id="cancelRepair" class="btn secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var status = document.getElementById('status');
+  var repair = document.getElementById('repair');
+  var cache = window.applicationCache;
+  var installing = false;
+  var failed = false;
+  var downloading = false;
+  var version = '[[VERSION_PLACEHOLDER]]';
+  var progress = document.getElementById('progress');
+  var percent = document.getElementById('percent');
+  var choice = document.getElementById('choice');
+  var cacheReady = false;
+  var detail = document.getElementById('detail');
+  var progressBar = document.getElementById('progressBar');
+  var logContainer = document.getElementById('logContainer');
+  var repairOverlay = document.getElementById('cacheCorruptOverlay');
+  var chainInfo = document.getElementById('chainInfo');
+  var logPos = 0;
+  var logXhr = null;
+  var logsStopped = false;
+
+  var CHAIN_LABELS = { umtx2: 'umtx2', poops: 'Poops', relapse: 'Relapse' };
+
+  function setChainInfo(chain) {
+    if (!chainInfo) return;
+    if (!chain || !CHAIN_LABELS[chain]) {
+      chainInfo.hidden = true;
+      return;
+    }
+    chainInfo.textContent = 'Chain: ' + CHAIN_LABELS[chain];
+    chainInfo.hidden = false;
+  }
+
+  function setProgress(value) {
+    progress.className = '';
+    progress.setAttribute('aria-valuenow', value);
+    progressBar.style.webkitTransform = 'scaleX(' + value / 100 + ')';
+    progressBar.style.transform = 'scaleX(' + value / 100 + ')';
+    percent.textContent = value + '%';
+  }
+
+  function appendLog(message) {
+    logContainer.hidden = false;
+    logContainer.textContent += message;
+    logContainer.scrollTop = logContainer.scrollHeight;
+  }
+
+  function stopLogs() {
+    logsStopped = true;
+    if (logXhr) logXhr.abort();
+  }
+
+  function pollLogs() {
+    if (logsStopped) return;
+    logXhr = new XMLHttpRequest();
+    logXhr.open('GET', '/logs?pos=' + logPos, true);
+    logXhr.timeout = 5000;
+    logXhr.onload = function () {
+      if (logsStopped) return;
+      if (logXhr.status === 200) {
+        if (logXhr.responseText) appendLog(logXhr.responseText);
+        var nextPos = parseInt(logXhr.getResponseHeader('X-Log-Pos'), 10);
+        if (!isNaN(nextPos)) logPos = nextPos;
+      }
+      setTimeout(pollLogs, logXhr.status === 200 ? 100 : 1000);
+    };
+    logXhr.onerror = logXhr.ontimeout = function () {
+      if (!logsStopped) setTimeout(pollLogs, 1000);
+    };
+    logXhr.send();
+  }
+
+  document.getElementById('cancelRepair').onclick = function () {
+    repairOverlay.hidden = true;
+  };
+
+  // Two keys, on this origin, which the homescreen app shares:
+  //   wkal_exploit  the chain of the last install that actually completed. The
+  //                 pointer reads this, so a new choice never clears it.
+  //   wkal_pending  the chain being installed right now, discarded if the
+  //                 install does not finish.
+  // All chain pages are cached either way, so changing either costs nothing and
+  // invalidates nothing.
+  function readKey(key) {
+    try { return window.localStorage.getItem(key); } catch (error) { return null; }
+  }
+  function writeKey(key, value) {
+    try {
+      if (value === null) window.localStorage.removeItem(key);
+      else window.localStorage.setItem(key, value);
+    } catch (error) { }
+  }
+  function valid(chain) { return chain === 'umtx2' || chain === 'poops' || chain === 'relapse'; }
+
+  var installed = readKey('wkal_exploit');
+  if (!valid(installed)) installed = null;
+  var picked = readKey('wkal_pending');
+  if (!valid(picked)) picked = null;
+
+  var match = /PlayStation 5\/(\d+\.\d+)/.exec(navigator.userAgent);
+  var fw = match ? parseFloat(match[1]) : 0;
+  var hasUmtx2 = fw >= 1 && fw <= 5.5;
+  var hasPoops = fw >= 7 && fw <= 12;
+  var hasRelapse = fw >= 7 && fw <= 13.60 && fw !== 9.05 && fw !== 11.40;
+
+  var params = new URLSearchParams(location.search);
+  var asked = params.get('exploit');
+  if (valid(asked)) {
+    // This is the reload that follows a choice. The server only serves the
+    // manifest attribute when the request carries a supported one, so reaching
+    // here means caching can start. Record the intent as pending; it only becomes
+    // the installed chain once /install succeeds.
+    picked = asked;
+    writeKey('wkal_pending', asked);
+  }
+
+  // A chain this firmware cannot run is not a usable choice.
+  if (picked === 'umtx2' && !hasUmtx2) picked = null;
+  if (picked === 'poops' && !hasPoops) picked = null;
+  if (picked === 'relapse' && !hasRelapse) picked = null;
+  if (installed === 'umtx2' && !hasUmtx2) installed = null;
+  if (installed === 'poops' && !hasPoops) installed = null;
+  if (installed === 'relapse' && !hasRelapse) installed = null;
+
+  var unsupported = !!match && !hasUmtx2 && !hasPoops && !hasRelapse;
+  // Firmware with only one usable chain needs no question: the server serves
+  // this page with its manifest attribute straight away, so record the intent.
+  if (!unsupported && !picked) {
+    var single = hasUmtx2 && !hasPoops && !hasRelapse ? 'umtx2'
+      : hasPoops && !hasRelapse ? 'poops'
+      : hasRelapse && !hasPoops ? 'relapse' : null;
+    if (single) {
+      picked = single;
+      writeKey('wkal_pending', single);
+    }
+  }
+  // Ask whenever the firmware supports both modern chains and this request
+  // carries no choice. The server withholds the manifest attribute in that
+  // state, so nothing downloads while the buttons are up.
+  var dualSupported = (hasPoops && hasRelapse) || !match;
+  var needsChoice = !unsupported && dualSupported && !asked;
+
+  function showChoice(message) {
+    status.textContent = 'Select Exploit';
+    detail.textContent = (match ? 'Firmware ' + match[1] : 'Your firmware') +
+      ' supports both Poops and Relapse.\n' + message;
+    choice.hidden = false;
+    setChainInfo(installed);
+    if (installed) document.getElementById(installed).className += ' selected';
+  }
+
+  function choose(chain) {
+    document.getElementById('poops').disabled = true;
+    document.getElementById('relapse').disabled = true;
+    // Recorded as pending on this origin, which the homescreen app shares, so
+    // the intent survives the reboot. It becomes the installed chain only once
+    // /install succeeds. Then reload with the choice in the query string: the
+    // server serves the entry page without its manifest attribute until a
+    // supported choice is present, so this reload is what starts the cache.
+    writeKey('wkal_pending', chain);
+    picked = chain;
+    status.textContent = 'Selected ' + (CHAIN_LABELS[chain] || chain) + '...';
+    detail.textContent = 'Preparing cache download...';
+    setChainInfo(chain);
+    params.set('exploit', chain);
+    location.replace(location.pathname + '?' + params.toString());
+  }
+  document.getElementById('poops').onclick = function () { choose('poops'); };
+  document.getElementById('relapse').onclick = function () { choose('relapse'); };
+
+  // offerRepair defaults to true; pass false to report a failure without
+  // pointing at clearing WebKit data, which is the wrong remedy for anything
+  // that is not a genuine half-downloaded cache.
+  function fail(message, offerRepair) {
+    failed = true;
+    stopLogs();
+    status.textContent = message;
+    status.className = 'error';
+    detail.textContent = '';
+    progress.className = 'error';
+    logContainer.className = 'error';
+    repair.hidden = offerRepair === false;
+    repairOverlay.hidden = repair.hidden;
+    if (!repair.hidden) repair.focus();
+  }
+
+  function install() {
+    if (failed || cacheReady) return;
+    cacheReady = true;
+    setProgress(100);
+    maybeInstall();
+  }
+
+  // Caching and the choice can finish in either order; both are needed.
+  function maybeInstall() {
+    if (!cacheReady || failed || installing) return;
+    if (!picked) return;
+    installing = true;
+    status.textContent = 'Installing homescreen shortcut...';
+    detail.textContent = 'The offline cache is ready. Keep this page open.';
+    setChainInfo(picked);
+    // Check the active cache before creating its homescreen shortcut.
+    fetch('/app/' + version + '/__complete__')
+      .then(function (response) { return response.text(); })
+      .then(function (marker) {
+        if (marker.trim() !== version) throw new Error('Cache incomplete. Run the installer again.');
+        return fetch('/install');
+      })
+      .then(function (response) {
+        if (!response.ok) throw new Error('Install failed. Run the installer again.');
+        // Only now is this the installed chain. Until this point the previous
+        // install is still intact and still usable, which is why the choice was
+        // never cleared on the way in.
+        writeKey('wkal_exploit', picked);
+        writeKey('wkal_pending', null);
+        stopLogs();
+        status.textContent = 'Installed successfully';
+        status.className = 'success';
+        progress.className = 'success';
+        detail.textContent = 'Reboot, then open WebKit Autoloader from the homescreen. You can close this page.';
+      })
+      .catch(function (error) { fail(error.message); });
+  }
+
+  repair.onclick = function () {
+    if (!confirm('Clear WebKit browser data and retry the installation?')) return;
+    stopLogs();
+    repair.disabled = true;
+    status.textContent = 'Clearing WebKit data...';
+    document.getElementById('repairMessage').textContent = status.textContent;
+    fetch('/clear-webkit-data').then(function (response) {
+      if (!response.ok) throw new Error('Could not clear WebKit data. Run the installer again.');
+      status.textContent = 'WebKit data cleared. The installer will reopen this page.';
+      document.getElementById('repairMessage').textContent = status.textContent;
+    }).catch(function (error) {
+      status.textContent = error.message;
+      document.getElementById('repairMessage').textContent = error.message;
+      repair.disabled = false;
+    });
+  };
+
+  if (unsupported) {
+    status.textContent = 'Unsupported firmware ' + match[1];
+    status.className = 'error';
+    detail.textContent = 'Supported: 1.00\u20135.50 via umtx2, 7.00\u201312.00 via Poops, 7.00\u201313.60 via Relapse (except 9.05 and 11.40).';
+    progress.hidden = true;
+    percent.hidden = true;
+    fetch('/exit').catch(function () { });
+    return;
+  }
+  if (needsChoice) {
+    // Nothing is downloading behind this prompt: the server withholds the
+    // manifest attribute until a choice comes back in the query string.
+    showChoice(installed
+      ? 'Choose an exploit. Currently installed: ' + installed + '.'
+      : 'Select which one to install:');
+    progress.hidden = true;
+    percent.hidden = true;
+    document.getElementById(installed || 'poops').focus();
+    return;
+  }
+  setChainInfo(picked);
+
+  if (!cache) {
+    status.textContent = 'This browser does not support offline AppCache.';
+    detail.textContent = '';
+    progress.hidden = true;
+    return;
+  }
+  pollLogs();
+  cache.addEventListener('downloading', function () {
+    downloading = true;
+    appendLog('[AppCache] Downloading offline content...\n');
+  });
+  cache.addEventListener('progress', function (event) {
+    if (failed || cacheReady) return;
+    if (event.total > 0) {
+      var value = Math.min(99, Math.round(event.loaded * 100 / event.total));
+      setProgress(value);
+    } else {
+      progress.removeAttribute('aria-valuenow');
+      progress.className = 'indeterminate';
+      progressBar.style.webkitTransform = 'scaleX(1)';
+      progressBar.style.transform = 'scaleX(1)';
+      percent.textContent = 'Downloading...';
+    }
+  });
+  cache.addEventListener('cached', function () { downloading = false; install(); });
+  cache.addEventListener('noupdate', function () { downloading = false; install(); });
+  cache.addEventListener('updateready', function () {
+    // Once the cache is ready or the install has started, a late event is just
+    // in-flight noise and must not overwrite the success message.
+    if (installing || failed || cacheReady) return;
+    downloading = false;
+    // swapCache() throws InvalidStateError unless the cache is genuinely
+    // UPDATEREADY, which is not the case when an update finished having replaced
+    // nothing. Never fatal: install() re-reads the __complete__ marker, so an
+    // unswapped cache is still validated before the shortcut is created.
+    if (cache.status === cache.UPDATEREADY) {
+      try { cache.swapCache(); } catch (error) { /* already the active cache */ }
+    }
+    install();
+  });
+  cache.addEventListener('error', function () {
+    if (failed || cacheReady || installing) return;
+    // An error mid-download means a half-written cache, which clearing WebKit
+    // data can fix. An error during the manifest check does not.
+    if (downloading) fail('Cache download failed. Run the installer again or clear WebKit data.');
+    else fail('The offline cache could not be checked. Run the installer again.', false);
+  });
+  cache.addEventListener('obsolete', function () {
+    if (failed || cacheReady || installing) return;
+    status.textContent = 'The cached manifest was superseded. Re-run the installer to finish.';
+  });
+  setTimeout(function () {
+    if (!cacheReady && !failed) {
+      status.textContent = 'Caching is taking unusually long';
+      detail.textContent = 'Keep this page open or run the installer again.';
+    }
+  }, 120000);
+})();
+</script>
+</body>
+</html>

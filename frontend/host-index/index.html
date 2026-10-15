@@ -1,0 +1,193 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebKit Autoloader v[[VERSION_PLACEHOLDER]] by MikePinku</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: #0b0a14;
+      background: -webkit-linear-gradient(160deg, #14101f 0%, #0b0a14 55%, #08070e 100%);
+      color: #ece7f5;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      min-height: 100%;
+      text-align: center;
+    }
+
+    main {
+      max-width: 34rem;
+      padding: 2rem;
+      width: 100%;
+    }
+
+    #brandMark {
+      width: 5.5rem;
+      height: 5.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: #ffffff;
+      background: -webkit-linear-gradient(90deg, #ffffff, #d9c9ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
+    }
+
+    #detail {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #a79ec0;
+      white-space: pre-line;
+    }
+
+    #detail strong { color: #ff8cc4; font-weight: 600; }
+
+    #route {
+      margin-top: 1.5rem;
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 79, 163, 0.45);
+      background: rgba(255, 79, 163, 0.10);
+      color: #ff8cc4;
+    }
+
+    #route[hidden] {
+      display: none !important;
+    }
+
+    #spinner {
+      margin: 1.5rem auto 0;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 79, 163, 0.2);
+      border-top-color: #ff4fa3;
+      -webkit-animation: spin 0.9s linear infinite;
+      animation: spin 0.9s linear infinite;
+    }
+
+    #spinner[hidden] {
+      display: none !important;
+    }
+
+    @-webkit-keyframes spin {
+      to { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #footer {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      width: 92%;
+      -webkit-transform: translateX(-50%);
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      color: #5f5878;
+      line-height: 1.5;
+      text-align: center;
+      z-index: 20;
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 1.7rem; }
+      main { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <svg id="brandMark" viewBox="0 0 64 64" aria-hidden="true">
+      <defs>
+        <linearGradient id="pkg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ff4fa3" />
+          <stop offset="1" stop-color="#c26bff" />
+        </linearGradient>
+      </defs>
+      <path fill="url(#pkg)" d="M32 4a28 28 0 1 0 0 56V47a15 15 0 1 1 0-30c8 0 15 6 15 15h13C60 16.3 47.7 4 32 4z" />
+      <circle cx="32" cy="32" r="7" fill="url(#pkg)" />
+    </svg>
+    <h1>WebKit Autoloader</h1>
+    <p id="detail">Detecting your firmware&hellip;</p>
+    <div id="route" hidden></div>
+    <div id="spinner" hidden></div>
+  </main>
+
+  <footer id="footer">WebKit Autoloader v[[VERSION_PLACEHOLDER]] by MikePinku (built [[BUILD_TIME_PLACEHOLDER]])<br />This project is free and open source: github.com/pinkythegawd/ps5-webkit-autoloader</footer>
+
+<script>
+(function () {
+  'use strict';
+  var detail = document.getElementById('detail');
+  var route = document.getElementById('route');
+  var spinner = document.getElementById('spinner');
+
+  var match = /PlayStation 5\/(\d+\.\d+)/.exec(navigator.userAgent);
+  var fw = match ? parseFloat(match[1]) : 0;
+
+  // Manual override for testing: ?exploit=umtx2|poops|relapse.
+  var routes = { umtx2: 'umtx2/index.html', poops: 'poops.html', relapse: 'relapse.html' };
+  var asked = new URLSearchParams(location.search).get('exploit');
+  var target = Object.prototype.hasOwnProperty.call(routes, asked) ? routes[asked] : null;
+  if (!target) {
+    if (!match) target = 'relapse.html';
+    else if (fw >= 1 && fw <= 5.5) target = 'umtx2/index.html';
+    else if (fw === 9.05 || fw === 11.40) target = 'poops.html';
+    else if (fw >= 7 && fw <= 13.6) target = 'relapse.html';
+  }
+
+  function showUnsupported() {
+    detail.innerHTML = 'Firmware <strong>' + match[1] + '</strong> is not supported.<br />' +
+      'Supported: 1.00&ndash;5.50 via umtx2, 7.00&ndash;12.00 via Poops,<br />' +
+      '7.00&ndash;13.60 via Relapse (except 9.05 and 11.40).';
+  }
+
+  function showRoute(name, label) {
+    detail.innerHTML = 'Firmware <strong>' + (match ? match[1] : 'desktop') + '</strong> &mdash; using ' + label + '.';
+    route.textContent = 'Loading ' + label + '\u2026';
+    route.hidden = false;
+    spinner.hidden = false;
+    setTimeout(function () { location.replace(name); }, 700);
+  }
+
+  if (target === 'umtx2/index.html') showRoute(target, 'umtx2');
+  else if (target === 'poops.html') showRoute(target, 'Poops');
+  else if (target === 'relapse.html') showRoute(target, 'Relapse');
+  else showUnsupported();
+})();
+</script>
+</body>
+
+</html>

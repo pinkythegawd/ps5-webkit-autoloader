@@ -1,0 +1,330 @@
+/* ============================================================================
+   WebKit Autoloader — "Pinku" theme (fork by MikePinku)
+   Dark charcoal glass with a magenta/pink accent, tuned for the PS5 browser
+   (older WebKit: every layout property carries -webkit- fallbacks).
+   Presentation only — the exploit payloads and their console are untouched.
+   ============================================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #0b0a14;
+  background: -webkit-linear-gradient(160deg, #14101f 0%, #0b0a14 55%, #08070e 100%);
+  color: #ece7f5;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+/* ---- Ambient glow behind the console ------------------------------------- */
+
+#loader::before {
+  content: "";
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  width: 46rem;
+  height: 46rem;
+  margin-left: -23rem;
+  background: -webkit-radial-gradient(circle, rgba(255, 79, 163, 0.16) 0%, rgba(194, 107, 255, 0.05) 45%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 79, 163, 0.16) 0%, rgba(194, 107, 255, 0.05) 45%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- Header --------------------------------------------------------------- */
+
+#pageHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  padding: 1.1rem 2.2rem;
+  z-index: 30;
+}
+
+#brand {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+#brandMark {
+  width: 2.6rem;
+  height: 2.6rem;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+
+#brandName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  line-height: 1.2;
+}
+
+#brandName small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: -webkit-linear-gradient(90deg, #ff4fa3, #c26bff);
+  background: linear-gradient(90deg, #ff4fa3, #c26bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: #ff6fb5;
+  -webkit-text-fill-color: transparent;
+}
+
+#statusChips {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.chip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.34rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #c9c2da;
+  white-space: nowrap;
+}
+
+.chip.accent {
+  border-color: rgba(255, 79, 163, 0.45);
+  background: rgba(255, 79, 163, 0.10);
+  color: #ff8cc4;
+}
+
+#langToggle {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #c9c2da;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.34rem 0.8rem;
+  cursor: pointer;
+  -webkit-transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+#langToggle:hover,
+#langToggle:focus {
+  border-color: rgba(255, 79, 163, 0.6);
+  color: #ff8cc4;
+  outline: none;
+}
+
+/* ---- Loader layout --------------------------------------------------------- */
+
+#loader {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+#logWrapper {
+  width: 82%;
+  height: 68%;
+  max-width: 1220px;
+  background: rgba(5, 4, 10, 0.82);
+  border: 1px solid rgba(255, 79, 163, 0.22);
+  border-radius: 14px;
+  -webkit-box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  overflow-y: auto;
+  font-family: "SFMono-Regular", Menlo, Monaco, "Cascadia Mono", monospace;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  padding: 1.1rem 1.3rem;
+}
+
+#console {
+  color: #a79ec0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+#console .log-line {
+  white-space: pre-wrap;
+  margin-bottom: 0.25rem;
+}
+
+#console .log-info, #console .log-setup, #console .log-star, #console .log-log, #console .log-cyan {
+  color: #a79ec0;
+}
+
+#console .log-success, #console .log-plus {
+  color: #7df9a0;
+}
+
+#console .log-warn {
+  color: #ffd166;
+}
+
+#console .log-error, #console .log-minus {
+  color: #ff6b6b;
+}
+
+/* Reuse the standalone runner's console inside the original log panel. */
+#console {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  white-space: normal;
+}
+
+/* ---- Progress -------------------------------------------------------------- */
+
+#progressContainer {
+  position: relative;
+  width: 82%;
+  max-width: 1220px;
+  height: 3.1rem;
+  margin-top: 1.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 79, 163, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#progressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: #ff4fa3;
+  background: -webkit-linear-gradient(90deg, #c26bff 0%, #ff4fa3 100%);
+  background: linear-gradient(90deg, #c26bff 0%, #ff4fa3 100%);
+  -webkit-box-shadow: 0 0 18px rgba(255, 79, 163, 0.55);
+  box-shadow: 0 0 18px rgba(255, 79, 163, 0.55);
+  -webkit-transition: width 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out;
+}
+
+#progressLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+  z-index: 1;
+  pointer-events: none;
+}
+
+#progressContainer[data-state="error"] #progressBar {
+  background: #d92b2b;
+  background: -webkit-linear-gradient(90deg, #8f1d1d 0%, #d92b2b 100%);
+  -webkit-box-shadow: 0 0 14px rgba(217, 43, 43, 0.5);
+  box-shadow: 0 0 14px rgba(217, 43, 43, 0.5);
+}
+
+#progressContainer[data-state="done"] #progressBar {
+  background: #2fbf71;
+  background: -webkit-linear-gradient(90deg, #15803d 0%, #2fbf71 100%);
+  -webkit-box-shadow: 0 0 14px rgba(47, 191, 113, 0.5);
+  box-shadow: 0 0 14px rgba(47, 191, 113, 0.5);
+}
+
+#logWrapper, #progressContainer { -webkit-flex-shrink: 0; flex-shrink: 0; }
+
+/* ---- Footer ---------------------------------------------------------------- */
+
+#footer {
+  position: fixed;
+  bottom: 0.8rem;
+  left: 50%;
+  width: 92%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #5f5878;
+  line-height: 1.55;
+  text-align: center;
+  z-index: 20;
+}
+
+#footer a { color: #8d84a8; text-decoration: none; }
+#footer a:hover { color: #ff8cc4; }
+
+#buildInfo { font-weight: 600; letter-spacing: 0.02em; }
+
+@media (max-width: 600px) {
+  #logWrapper, #progressContainer { width: 92%; }
+  #logWrapper { height: 62%; font-size: 0.85rem; padding: 0.75rem; }
+  #progressContainer { margin-top: 1rem; }
+  #progressLabel { font-size: 0.85rem; padding: 0 0.5rem; text-align: center; }
+  #footer { font-size: 0.65rem; }
+  #pageHeader { padding: 0.8rem 1rem; }
+  #brandName { font-size: 1.05rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #progressBar { -webkit-transition: none; transition: none; }
+}

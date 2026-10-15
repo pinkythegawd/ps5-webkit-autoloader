@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>WebKit Autoloader v[[VERSION_PLACEHOLDER]] by MikePinku (built [[BUILD_TIME_PLACEHOLDER]])</title>
+<style>
+  * { margin: 0; padding: 0; -webkit-box-sizing: border-box; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: #0b0a14;
+    background: -webkit-linear-gradient(160deg, #14101f 0%, #0b0a14 55%, #08070e 100%);
+    color: #ece7f5;
+    display: -webkit-box; display: -webkit-flex; display: flex;
+    -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+    -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center;
+  }
+  #appMark { width: 5.5rem; height: 5.5rem; margin-bottom: 1.5rem;
+    filter: drop-shadow(0 10px 30px rgba(255, 79, 163, 0.35)); }
+  #brandName { font-size: 1.6rem; font-weight: 700; color: #fff; }
+  #brandName small { display: block; font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #ff6fb5; margin-top: 0.3rem; }
+  #status { margin-top: 1.25rem; font-size: 1.05rem; color: #a79ec0; max-width: 34rem;
+    line-height: 1.6; text-align: center; }
+  #footer { position: fixed; bottom: 12px; left: 0; width: 100%;
+    font-size: 0.72rem; color: #5f5878; text-align: center; line-height: 1.5; }
+</style>
+<body style="text-align:center">
+  <div>
+    <svg id="appMark" viewBox="0 0 64 64" aria-hidden="true">
+      <defs>
+        <linearGradient id="pkg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ff4fa3" />
+          <stop offset="1" stop-color="#c26bff" />
+        </linearGradient>
+      </defs>
+      <path fill="url(#pkg)" d="M32 4a28 28 0 1 0 0 56V47a15 15 0 1 1 0-30c8 0 15 6 15 15h13C60 16.3 47.7 4 32 4z" />
+      <circle cx="32" cy="32" r="7" fill="url(#pkg)" />
+    </svg>
+    <div id="brandName">WebKit Autoloader<small>by MikePinku</small></div>
+    <p id="status">Loading...</p>
+  </div>
+  <div id="footer">WebKit Autoloader v[[VERSION_PLACEHOLDER]] by MikePinku &middot; github.com/pinkythegawd/ps5-webkit-autoloader</div>
+<script>
+(function () {
+  // All chain pages are cached, so this pointer only has to pick one. The choice
+  // was recorded by the installer on this same origin, so it is readable here
+  // with no server running.
+  var version = '[[VERSION_PLACEHOLDER]]';
+  var base = '/app/[[APP_DIR_PLACEHOLDER]]/';
+  // umtx2 is a multi-file page staged under its own directory; the two modern
+  // chains are single standalone HTML files.
+  var target = { umtx2: 'umtx2/index.html', poops: 'poops.html', relapse: 'relapse.html' };
+  var chain = null;
+  try { chain = window.localStorage.getItem('wkal_exploit'); } catch (error) { chain = null; }
+  if (chain !== 'umtx2' && chain !== 'poops' && chain !== 'relapse') {
+    document.getElementById('status').textContent = 'No exploit was chosen. Run the installer again.';
+    return;
+  }
+  fetch(base + '__complete__').then(function (r) { return r.text(); }).then(function (marker) {
+    if (marker.trim() !== version) throw new Error('Cache incomplete');
+    location.replace(base + target[chain]);
+  }).catch(function () {
+    document.getElementById('status').textContent = 'Cache incomplete. Run the installer again.';
+  });
+})();
+</script>
+</body>
+</html>

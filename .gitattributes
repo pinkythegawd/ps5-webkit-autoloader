@@ -1,0 +1,3 @@
+# Keep every file byte-exact across platforms: the build embeds shell
+# scripts, Python sources and exploit JS where line endings matter.
+* -text

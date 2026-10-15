@@ -1,0 +1,41 @@
+# Native and downloaded binaries
+*.elf
+*.bin
+*.o
+
+# Generated installer registry, version and metadata
+include/file_registry.h
+include/file_registry.c
+include/.file_registry.stamp
+include/wkali_version.h
+assets/param.json
+assets/icon0.png
+assets/icon.ico
+frontend/installer-page/logo.svg
+frontend/dist/
+
+# Build inputs, standalone HTML, host and packaging outputs
+build/
+dist/
+webkit-autoloader-host.py
+webkit-autoloader-host_v*.py
+webkit-autoloader-host.exe
+webkit-autoloader-host_v*.exe
+webkit-autoloader-host.spec
+
+# OS / Python / logs / local references
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+*.log
+.for_reference/
+
+# Fork-local: umtx2 prepared copy (generated from third_party/umtx2)
+frontend/umtx2/
+
+# Local reference clones used during development
+.reference/
+
+# Host build stage and router page artifacts
+build/host/
