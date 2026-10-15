@@ -12,11 +12,17 @@ function setup(file, options = {}) {
   const code = html.match(/<script>([\s\S]*?)<\/script>/)[1]
     .replaceAll('[[VERSION_PLACEHOLDER]]', 'test-version')
     .replaceAll('[[APP_DIR_PLACEHOLDER]]', 'test-version');
+  const makeNode = () => ({ hidden: true, className: '', textContent: '', style: {}, focus() {},
+    children: [],
+    setAttribute(key, value) { this[key] = String(value); },
+    removeAttribute(key) { delete this[key]; },
+    querySelector(selector) {
+      return this.children.find(child => child.className === selector.slice(1)) || null;
+    },
+    insertBefore(node) { this.children.push(node); return node; } });
   const nodes = Object.fromEntries(['status', 'repair', 'choice', 'poops', 'relapse', 'progress', 'percent', 'detail', 'progressBar', 'logContainer',
     'cacheCorruptOverlay', 'cancelRepair', 'repairMessage', 'chainInfo']
-    .map(key => [key, { hidden: true, className: '', textContent: '', style: {}, focus() {},
-      setAttribute(key, value) { this[key] = String(value); },
-      removeAttribute(key) { delete this[key]; } }]));
+    .map(key => [key, makeNode()]));
   // Seed the text the markup starts with, so a handler that writes nothing is
   // distinguishable from one that writes the expected message.
   nodes.status.textContent = 'Caching content...';
@@ -35,7 +41,7 @@ function setup(file, options = {}) {
       this.abort = () => { this.aborted = true; };
       this.getResponseHeader = () => '42';
     },
-    document: { getElementById: key => nodes[key] },
+    document: { getElementById: key => nodes[key], createElement: makeNode },
     navigator: { userAgent: options.fw ? 'PlayStation 5/' + options.fw : 'Mozilla/5.0' },
     localStorage: {
       getItem: key => (saved.has(key) ? saved.get(key) : null),
@@ -110,6 +116,12 @@ const dual = options => setup('frontend/installer-page/index.html',
   // buttons. The server withholds the manifest attribute in this state too.
   const before = setup('frontend/installer-page/index.html', { fw: '11.00' });
   assert.equal(before.nodes.choice.hidden, false, 'a bare load must prompt');
+  // The recommendation mirrors the PC-host router: relapse everywhere dual
+  // choice exists (9.05/11.40 only ever see the single-chain prompt).
+  const badge = before.nodes.relapse.children.find(child => child.className === 'choice-recommended');
+  assert(badge, 'the router-recommended card must be badged');
+  assert.match(badge.textContent, /Recommended for FW 11\.00/);
+  assert.equal(before.nodes.poops.children.length, 0, 'only one card is badged');
   assert.equal(before.nodes.progress.hidden, true, 'no progress bar behind the prompt');
   assert.equal(Object.keys(before.listeners).length, 0, 'nothing may cache behind the prompt');
   assert.deepEqual(before.requests, []);

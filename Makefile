@@ -73,6 +73,7 @@ test:
 	node tools/test_installer.js
 	node tools/test_selection_flow.js
 	node tools/test_umtx2.js
+	node tools/test_log_contract.js
 
 # Run on Linux or in the SDK container; PS5 services are stubbed.
 test-native:

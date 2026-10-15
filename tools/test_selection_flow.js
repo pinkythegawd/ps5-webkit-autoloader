@@ -32,11 +32,17 @@ function loadPage(options) {
   const html = fs.readFileSync('frontend/installer-page/index.html', 'utf8');
   const code = html.match(/<script>([\s\S]*?)<\/script>/)[1]
     .replaceAll('[[VERSION_PLACEHOLDER]]', 'test-version');
+  const makeNode = () => ({ hidden: true, className: '', textContent: '', style: {}, focus() {},
+    children: [],
+    setAttribute(key, value) { this[key] = String(value); },
+    removeAttribute(key) { delete this[key]; },
+    querySelector(selector) {
+      return this.children.find(child => child.className === selector.slice(1)) || null;
+    },
+    insertBefore(node) { this.children.push(node); return node; } });
   const nodes = Object.fromEntries(['status', 'repair', 'choice', 'poops', 'relapse', 'progress', 'percent', 'detail', 'progressBar', 'logContainer',
     'cacheCorruptOverlay', 'cancelRepair', 'repairMessage', 'chainInfo']
-    .map(key => [key, { hidden: true, className: '', textContent: '', style: {}, focus() {},
-      setAttribute(key, value) { this[key] = String(value); },
-      removeAttribute(key) { delete this[key]; } }]));
+    .map(key => [key, makeNode()]));
   nodes.status.textContent = 'Caching content...';
   nodes.progress['aria-valuenow'] = '0';
   const saved = new Map(Object.entries(options.seed || {}));
@@ -53,7 +59,7 @@ function loadPage(options) {
       this.abort = () => { this.aborted = true; };
       this.getResponseHeader = () => '42';
     },
-    document: { getElementById: key => nodes[key] },
+    document: { getElementById: key => nodes[key], createElement: makeNode },
     navigator: { userAgent: options.fw ? 'PlayStation 5/' + options.fw : 'Mozilla/5.0' },
     localStorage: {
       getItem: key => (saved.has(key) ? saved.get(key) : null),

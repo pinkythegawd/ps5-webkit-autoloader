@@ -429,6 +429,19 @@
       margin-bottom: 0.75rem;
     }
 
+    .choice-card .choice-recommended {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ffd166;
+      background: rgba(255, 209, 102, 0.12);
+      border: 1px solid rgba(255, 209, 102, 0.4);
+      border-radius: 6px;
+      padding: 0.15rem 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
     .choice-card .choice-desc {
       font-size: 0.95rem;
       color: #c9c2da;
@@ -669,6 +682,17 @@
     choice.hidden = false;
     setChainInfo(installed);
     if (installed) document.getElementById(installed).className += ' selected';
+    // Mirror the PC-host router's chain table: relapse is the default pick and
+    // poops only on the two firmwares relapse cannot run. A highlight only —
+    // both cards stay clickable, the server already gates the real choice.
+    var recommended = (fw === 9.05 || fw === 11.4) ? 'poops' : 'relapse';
+    var card = document.getElementById(recommended);
+    if (!card.querySelector('.choice-recommended')) {
+      var badge = document.createElement('div');
+      badge.className = 'choice-recommended';
+      badge.textContent = match ? 'Recommended for FW ' + match[1] : 'Recommended';
+      card.insertBefore(badge, card.querySelector('.choice-desc'));
+    }
   }
 
   function choose(chain) {

@@ -129,7 +129,8 @@ body {
   color: #ff8cc4;
 }
 
-#langToggle {
+#langToggle,
+#delayChip {
   font: inherit;
   font-size: 0.78rem;
   font-weight: 600;
@@ -145,7 +146,9 @@ body {
 }
 
 #langToggle:hover,
-#langToggle:focus {
+#langToggle:focus,
+#delayChip:hover,
+#delayChip:focus {
   border-color: rgba(255, 79, 163, 0.6);
   color: #ff8cc4;
   outline: none;

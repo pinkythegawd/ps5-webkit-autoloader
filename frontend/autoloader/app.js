@@ -2,7 +2,10 @@
 // Keep the actual console, payloads and exploit in this document.
 // "Pinku" chrome for the MikePinku fork: header chips, EN/FR toggle, themed
 // progress. The console observer contract is unchanged from upstream.
-(function () {
+// The startup runner awaits this file's return value, so the whole page is a
+// returned async IIFE: while its promise is pending, the exploit has not
+// booted. This is what makes the boot-wait countdown below actually block.
+return (async function () {
   'use strict';
   var output = document.getElementById('console');
   if (!output || document.getElementById('loader')) return;
@@ -41,6 +44,9 @@
       alreadyRunning: 'ELF loader already running. Nothing to do.',
       stopped: 'Stopped. See the log above.',
       error: 'An error occurred. See the log above.',
+      bootDelay: 'Boot wait',
+      off: 'Off',
+      bootWait: 'Starting in',
       footerNote: 'This project is free and open source: '
     },
     fr: {
@@ -67,6 +73,9 @@
       alreadyRunning: 'Chargeur ELF déjà actif. Rien à faire.',
       stopped: 'Interrompu. Voir le journal ci-dessus.',
       error: 'Une erreur est survenue. Voir le journal ci-dessus.',
+      bootDelay: 'Attente boot',
+      off: 'Non',
+      bootWait: 'Démarrage dans',
       footerNote: 'Ce projet est libre et open source : '
     }
   };
@@ -111,6 +120,31 @@
   element('div', 'chainChip', chips,
     chain === 'poops' ? t('chainPoops') : chain === 'relapse' ? t('chainRelapse') : t('chainAuto')
   ).className = 'chip accent';
+  /* ---- Boot delay chip ------------------------------------------------------ */
+  // The startup runner awaits this script before booting the exploit, so a
+  // countdown held open here delays the whole chain — the point when a cached
+  // page fires right after power-on and the kernel needs a moment to settle.
+  var DELAY_STEPS = [0, 15, 30];
+  var delaySeconds = 0;
+  try {
+    var storedDelay = parseInt(window.localStorage.getItem('pkal_boot_delay'), 10);
+    if (DELAY_STEPS.indexOf(storedDelay) >= 0) delaySeconds = storedDelay;
+  } catch (error) { }
+  var delayChip = element('button', 'delayChip', chips);
+  delayChip.type = 'button';
+  function renderDelayChip() {
+    delayChip.textContent = t('bootDelay') + ': ' +
+      (delaySeconds ? delaySeconds + 's' : t('off'));
+  }
+  renderDelayChip();
+  delayChip.addEventListener('click', function () {
+    delaySeconds = DELAY_STEPS[(DELAY_STEPS.indexOf(delaySeconds) + 1) % DELAY_STEPS.length];
+    try {
+      window.localStorage.setItem('pkal_boot_delay', String(delaySeconds));
+    } catch (error) { }
+    renderDelayChip();
+  });
+
   var toggle = element('button', 'langToggle', chips, lang === 'fr' ? 'FR' : 'EN');
   toggle.type = 'button';
   toggle.addEventListener('click', function () {
@@ -120,6 +154,7 @@
     var tagline = document.getElementById('brandName').querySelector('small');
     if (tagline) tagline.textContent = t('tagline');
     if (fwChip) fwChip.textContent = t('fw') + ' ' + fw;
+    renderDelayChip();
     // Re-render the standing message in the new language; live lines keep
     // coming through say() either way.
     say(lastKey, percent, progress.getAttribute('data-state') || 'running');
@@ -227,4 +262,22 @@
     wrapper.scrollTop = wrapper.scrollHeight;
   });
   observer.observe(output, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
+
+  // While this async script is pending, the runner has not called __boot() yet:
+  // nothing has touched the kernel. Counting down here is the pause. Tap
+  // anywhere but the chip to skip it.
+  if (delaySeconds > 0) {
+    var skipped = false;
+    var skipWait = function (event) {
+      if (delayChip.contains(event.target)) return;
+      skipped = true;
+    };
+    loader.addEventListener('click', skipWait);
+    for (var left = delaySeconds; left > 0 && !skipped; left--) {
+      update(0, t('bootWait') + ' ' + left + 's', 'running');
+      await new Promise(function (resolve) { setTimeout(resolve, 1000); });
+    }
+    loader.removeEventListener('click', skipWait);
+    say(lastKey, percent, 'running');
+  }
 }());
