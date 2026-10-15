@@ -52,6 +52,25 @@ cp -R "$SOURCE/document/en/ps5"/. "$DEST"/
 rm -rf "$DEST/payloads"
 mkdir -p "$DEST/payloads"
 
+# 1b. Normalize to LF: umtx2 commits CRLF and no .gitattributes, so a fresh
+#     checkout is CRLF on every platform, while the patch below is LF. Without
+#     this, application would depend on the machine's core.autocrlf (CI fails,
+#     Windows-only machines pass). Binaries only ever exist in payloads/,
+#     pruned above, so a walk is safe.
+"${PYTHON:-python3}" - "$DEST" <<'PYEOF'
+import os
+import sys
+
+for dirpath, _dirs, files in os.walk(sys.argv[1]):
+    for name in files:
+        path = os.path.join(dirpath, name)
+        with open(path, "rb") as f:
+            data = f.read()
+        if b"\r\n" in data:
+            with open(path, "wb") as f:
+                f.write(data.replace(b"\r\n", b"\n"))
+PYEOF
+
 # 2. Turn the copy into a throwaway git repo so `git apply` can handle the
 #    patch. Two commits: pristine umtx2, then our autoloader patch.
 SRC_HASH=$(git -C "$SOURCE" rev-parse --short HEAD)

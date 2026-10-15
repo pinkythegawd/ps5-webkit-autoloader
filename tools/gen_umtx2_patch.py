@@ -104,6 +104,19 @@ def main():
     for name in os.listdir(payloads):
         os.remove(os.path.join(payloads, name))
 
+    # umtx2 commits CRLF with no .gitattributes; normalize to LF so the
+    # generated patch applies identically regardless of the checking-out
+    # platform's core.autocrlf. Binaries only exist in payloads/, emptied
+    # above.
+    for dirpath, _dirs, files in os.walk(dest):
+        for name in files:
+            path = os.path.join(dirpath, name)
+            with open(path, "rb") as f:
+                data = f.read()
+            if b"\r\n" in data:
+                with open(path, "wb") as f:
+                    f.write(data.replace(b"\r\n", b"\n"))
+
     run(["git", "init", "-q"], dest, what="git init")
     run(["git", "config", "user.name", "pkal"], dest)
     run(["git", "config", "user.email", "pkal@localhost"], dest)
