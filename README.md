@@ -27,6 +27,11 @@ and Relapse, with a fresh coat of paint:
   one-time setup, with a homescreen shortcut.
 - **Redesigned UI** (dark pink theme) across the installer, the autoloader page and the
   PC host, with **English/French** toggle on the autoloader page.
+- **Firmware-aware guidance.** The installer prompt badges the **recommended chain**
+  for your detected firmware — the same table the PC host uses.
+- **Cold-boot friendly.** The autoloader page has a **Boot wait** setting (Off / 15s /
+  30s, remembered across boots) that briefly holds the exploit back when the cached
+  page fires right after power-on. Tap anywhere to skip the wait.
 - **Better PC setup host.** The single-file `webkit-autoloader-host.py` now carries the
   whole setup docroot — a firmware router page, both standalone chain pages and the
   multi-file umtx2 chain — and serves every text file with an explicit UTF-8 charset.
@@ -132,8 +137,9 @@ etaHEN.elf
 If you want to create or test your own WebKit payloads, check out [ps5-webkit-remote-loader](https://github.com/itsPLK/ps5-webkit-remote-loader), which this project is based on. It lets you send and run JavaScript payloads directly over the network on port 9027.
 
 Build both release artifacts with `./build_release.sh` (Docker required). Run `make test`
-for the offline checks (payloads, installer, exploit-selection flow, umtx2 patch and host
-router), `make umtx2-prepare` to (re)generate the umtx2 chain after a submodule update,
+for the offline checks (payloads, installer, exploit-selection flow, umtx2 patch, host
+router and the UI's log-string contract),
+`make umtx2-prepare` to (re)generate the umtx2 chain after a submodule update,
 `make dev` for a local page preview of every chain, and `make host` to build the PC setup
 host. See [ARCHITECTURE.md](ARCHITECTURE.md) for the build and cache layout, and
 [pc-host/README.md](pc-host/README.md) for the host's options.
