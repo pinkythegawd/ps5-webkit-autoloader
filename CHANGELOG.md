@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.7.1] - 2026-10-15
+
+### Installer
+* The exploit prompt now **highlights the recommended chain** for the detected
+  firmware — the same table the PC-host router uses — with an amber
+  "Recommended for FW x.xx" badge. Both cards stay clickable.
+
+### Chain pages
+* New **Boot wait** chip (Off / 15s / 30s, remembered across boots): holds the
+  exploit back for a moment when a cached page fires right after power-on,
+  giving the kernel time to settle. Tap anywhere but the chip to skip the
+  wait; changing the chip mid-countdown never skips.
+
+### For developers
+* `make test` runs a sixth suite, `tools/test_log_contract.js`, which pins
+  every console string the chain pages' UI matches to the source that prints
+  it — an upstream rename can no longer silently strand the progress bar.
+
 ## [v0.7.0] - 2026-10-15
 
 The MikePinku fork: lower-firmware support is back, the UI is redesigned, and
