@@ -42,6 +42,12 @@ jobs:
             BUILD_TYPE=dev
           fi
           version="$(BUILD_TYPE=$BUILD_TYPE python3 tools/gen_version.py --print)"
+          # The version comes from WKAL_VERSION in include/wkali.h, not the
+          # tag — refuse to publish if the two ever drift apart.
+          if [[ "$GITHUB_REF" == refs/tags/v* && "v$version" != "$GITHUB_REF_NAME" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match build version v$version — bump WKAL_VERSION in include/wkali.h"
+            exit 1
+          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "BUILD_VERSION=$version" >> "$GITHUB_ENV"
           echo "BUILD_TYPE=$BUILD_TYPE" >> "$GITHUB_ENV"
