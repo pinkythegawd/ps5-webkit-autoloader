@@ -103,10 +103,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          files=(webkit-autoloader-installer_v*.elf webkit-autoloader-host_v*.py webkit-autoloader-host_v*.exe)
           gh release create "$GITHUB_REF_NAME" \
             --repo "$GITHUB_REPOSITORY" \
             --title "WebKit Autoloader v${{ needs.native.outputs.version }} by MikePinku" \
             --generate-notes \
-            webkit-autoloader-installer_v*.elf \
-            webkit-autoloader-host_v*.py \
-            webkit-autoloader-host_v*.exe
+            "${files[@]}" \
+          || gh release upload "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" --clobber \
+            "${files[@]}"

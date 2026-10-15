@@ -610,10 +610,14 @@ def main(argv=None):
     if args.no_color:
         global COLOR_ENABLED
         COLOR_ENABLED = False
-    try:
-        sys.stdout.reconfigure(line_buffering=True)
-    except AttributeError:
-        pass
+    # Windows consoles default to cp1252 on Pythons older than 3.15; the
+    # banner uses characters outside it. Force UTF-8 and never crash on
+    # unencodable output.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
+        except (AttributeError, ValueError, OSError):
+            pass
 
     # Start the update check before the splash so the HTTP request overlaps
     # the splash sleep; the notice is printed once the main screen is up.
