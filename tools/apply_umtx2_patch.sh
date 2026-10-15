@@ -74,6 +74,7 @@ else
     echo "Error: patch does not apply cleanly to $DEST."
     echo "umtx2 has likely changed upstream — regenerate the patch:"
     echo "  python3 tools/gen_umtx2_patch.py"
+    git apply --check "$PATCH" || true
     exit 1
 fi
 
