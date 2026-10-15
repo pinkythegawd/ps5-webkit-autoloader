@@ -75,7 +75,7 @@ jobs:
         run: |
           pip install pyinstaller
           script="$(ls webkit-autoloader-host_v*.py)"
-          python -m PyInstaller --onefile --clean -y \
+          python -m PyInstaller --onefile --clean -y --distpath . \
             --name "webkit-autoloader-host_v${{ needs.native.outputs.version }}" \
             "$script"
 
